@@ -1030,10 +1030,10 @@ void ST7735_DrawCharS(int16_t x, int16_t y, char c, int16_t textColor, int16_t b
 void ST7735_DrawCharS2(int16_t x, int16_t y, char c, int16_t textColor, int16_t bgColor, uint8_t size){
   uint8_t line; // vertical column of pixels of character in font
   int32_t i, j;
-  if((x >= _width)            || // Clip right
-     (y >= _height)           || // Clip bottom
-     ((x + 5 * size - 1) < 0) || // Clip left
-     ((y + 8 * size - 1) < 0))   // Clip top
+  if((y >= _width)            || // Clip right
+     (x >= _height)           || // Clip bottom
+     ((y + 5 * size - 1) < 0) || // Clip left
+     ((x + 8 * size - 1) < 0))   // Clip top
     return;
 
   for (i=0; i<6; i++) {

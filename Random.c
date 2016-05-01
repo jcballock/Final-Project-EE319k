@@ -6,6 +6,6 @@
 void Random_Gen(int key){
 	int value = 1664525*key+1013904223;
 	double rand = ((value&0xFF000000)/0x01000000)+1;
-	rand -= 10;
+	rand -= 12;
 	boxes[index_val] = rand;
 }

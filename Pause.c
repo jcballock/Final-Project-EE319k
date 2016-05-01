@@ -17,7 +17,7 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		SysTick_Wait10ms(50);
 		while((GPIO_PORTE_DATA_R&0x10) == 0x00){};
 		while((GPIO_PORTE_DATA_R&0x10) == 0x10){};
-		ST7735_FillRect(48, 80, 120, 20, bgcolor);
+		ST7735_FillRect(80, 0, 128, 160, bgcolor);
 		NVIC_ST_CTRL_R += 0x02;
 	}
 	else{
@@ -34,12 +34,15 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		SysTick_Wait10ms(50);
 		while((GPIO_PORTE_DATA_R&0x10) == 0x00){};
 		while((GPIO_PORTE_DATA_R&0x10) == 0x10){};
-		ST7735_FillRect(24, 80, 160, 20, bgcolor);
+		ST7735_FillRect(80, 0, 128, 160, 0xFFFF);
 		for(int i = 0; i < 12; i++){
 			boxes[i] = mirror[i];
 			zs[i] = 2;
 		}
-		SysTick_Wait10ms(5);
+		SysTick_Wait10ms(5);		
+		color = 0;
+		bgColor = 0xFFFF;
+		score = 0;
 		NVIC_ST_CTRL_R += 0x02;
 		
 	}

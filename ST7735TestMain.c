@@ -55,6 +55,10 @@ uint8_t index_val = 0;
 double zs[12] = {2,2,2,2,2,2,2,2,2,2,2,2};
 uint32_t ADCMail;
 uint32_t ADCStatus;
+int score = 0;
+uint16_t color;
+uint16_t bgColor;
+uint8_t reset = 0;
 const uint16_t Test[] = {
   0x001F, 0xFFFF, 0xF800, 0x07E0
 };
@@ -172,55 +176,96 @@ void makeArrow(int color){
 //
 // Takes an x and y value as inputs and generates a square based on their positions
 //
-void makeSquare(int x, double y, double z){
+void makeSquare(int x, double y, double z, uint16_t color){
 	if(y <= 0){
-		line_bresenham3d(x, y, z, x, y, z+.125, 0);
-		line_bresenham3d(x-1, y, z, x-1, y, z+.125, 0);
-		line_bresenham3d(x, y-2, z, x, y-2, z+.125, 0);
-		line_bresenham3d(x, y, z+.125, x, y-2, z+.125, 0);
-		line_bresenham3d(x, y, z+.125, x-1, y, z+.125, 0);
+		line_bresenham3d(x, y, z, x, y, z+.125, color);
+		line_bresenham3d(x-1, y, z, x-1, y, z+.125, color);
+		line_bresenham3d(x, y-2, z, x, y-2, z+.125, color);
+		line_bresenham3d(x, y, z+.125, x, y-2, z+.125, color);
+		line_bresenham3d(x, y, z+.125, x-1, y, z+.125, color);
 	}
 	else{
-		line_bresenham3d(x, y, z, x, y, z+.125, 0);
-		line_bresenham3d(x, y-2, z, x, y-2, z+.125, 0);
-		line_bresenham3d(x-1, y-2, z, x-1, y-2, z+.125, 0);
-		line_bresenham3d(x, y, z+.125, x, y-2, z+.125, 0);
-		line_bresenham3d(x, y-2, z+.125, x-1, y-2, z+.125, 0);
+		line_bresenham3d(x, y, z, x, y, z+.125, color);
+		line_bresenham3d(x, y-2, z, x, y-2, z+.125, color);
+		line_bresenham3d(x-1, y-2, z, x-1, y-2, z+.125, color);
+		line_bresenham3d(x, y, z+.125, x, y-2, z+.125, color);
+		line_bresenham3d(x, y-2, z+.125, x-1, y-2, z+.125, color);
 	}
-	line_bresenham3d(x, y, z, x-1, y, z, 0);
-	line_bresenham3d(x, y, z, x, y-2, z, 0);
-	line_bresenham3d(x-1, y-2, z, x-1, y, z, 0);
-	line_bresenham3d(x-1, y-2, z, x, y-2, z, 0);
+	line_bresenham3d(x, y, z, x-1, y, z, color);
+	line_bresenham3d(x, y, z, x, y-2, z, color);
+	line_bresenham3d(x-1, y-2, z, x-1, y, z, color);
+	line_bresenham3d(x-1, y-2, z, x, y-2, z, color);
 }
 int32_t Convert(uint32_t input){
 	int32_t result;
 	result = (55459000+(943790*input))/1000000;
   return result;
 }
+void toString(int value){
+	uint8_t offset = 0;
+	while(value > 0){
+		uint8_t digit = value%10 + 0x30;
+		ST7735_DrawCharS2(153 - offset, 119, digit, color, bgColor, 1);
+		offset += 6;
+		value /= 10;
+	}
+}
 void SysTick_Handler(void){
+	score += 10;
+	if(score < 1000){
+		color = 0;
+		bgColor = 0xFFFF;
+	}
+	else if(score < 5000){
+		bgColor = 0;
+		color = 0xFFFF;
+		ST7735_FillRect(82, 0, 128, 164, bgColor);	
+	}
+	else if(score < 10000){
+		bgColor = 0;
+		color = 0x07E0;
+	}
+	else{
+		if(reset == 0)
+			color = 0x6732;
+		bgColor = 0;
+		if(color < 0x0400 || color > 0xF000){
+			if(reset == 2)
+				color = 0x0100;
+			reset = 1;
+			color += 0x001F;
+		}
+		else{
+			if(reset == 1)
+				color = 0x6732;
+			reset = 2;
+			color -= 0xF060;
+		}
+	}
 	if((GPIO_PORTE_DATA_R&0x10) == 0x10){
 		NVIC_ST_CTRL_R -= 0x02; // Disable Systick
-		Pause(0, 0, 0xFFFF);
+		Pause(0, color, bgColor);
 	}
 	ADCMail = ADC_In();  // sample 12-bit channel 1
   double shift_factor = ((double) Convert(ADCMail))/1000; 
 	shift_factor -= 1;
 	shift_factor *= .5;
-	ST7735_FillScreen(0xFFFF);	
+	ST7735_FillRect(0, 0, 82, 164, bgColor);	
+	toString(score);
 	for(index_val = 0; index_val < 12; index_val++){
 		if(boxes[index_val] == -99)
 			Random_Gen(NVIC_ST_CURRENT_R);
 		boxes[index_val] += shift_factor;
-		makeSquare(-2, boxes[index_val], zs[index_val]);
+		makeSquare(-2, boxes[index_val], zs[index_val], color);
 		if(zs[index_val] < .6){
 			if(boxes[index_val] > -.75 && boxes[index_val] < 2.75){
 				NVIC_ST_CTRL_R -= 0x02; // Disable Systick
-				Pause(1, 0, 0xFFFF);
+				Pause(1, color, bgColor);
 			}
 		}
 		zs[index_val] -= .05;
 	}
-	makeArrow(0);
+	makeArrow(color);
 }
 int main(void){  
 //  uint8_t red, green, blue;
@@ -239,7 +284,7 @@ int main(void){
 	Sound_Init();
   // test DrawChar() and DrawCharS()
   ST7735_InitR(INITR_REDTAB);
-  
+  ST7735_FillScreen(0xFFFF); 
   //ST7735_OutString("Lab 7!\nWelcome to EE319K");
 	//IO_Touch();
 	NVIC_ST_RELOAD_R = 2666666;
