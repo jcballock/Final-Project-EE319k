@@ -119,7 +119,7 @@
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
           <Simulator>
-            <UseSimulator>0</UseSimulator>
+            <UseSimulator>1</UseSimulator>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
             <RunToMain>1</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
@@ -131,7 +131,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Simulator>
           <Target>
-            <UseTarget>1</UseTarget>
+            <UseTarget>0</UseTarget>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
             <RunToMain>1</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
@@ -144,7 +144,7 @@
             <UsePdscDebugDescription>0</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>3</TargetSelection>
+          <TargetSelection>2</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -426,11 +426,6 @@
               <FilePath>.\ST7735TestMain.c</FilePath>
             </File>
             <File>
-              <FileName>IO.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\IO.s</FilePath>
-            </File>
-            <File>
               <FileName>LCD.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\LCD.s</FilePath>
@@ -459,6 +454,26 @@
               <FileName>Pause.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Pause.c</FilePath>
+            </File>
+            <File>
+              <FileName>SoundLibrary.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SoundLibrary.c</FilePath>
+            </File>
+            <File>
+              <FileName>dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>Sound.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sound.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer0A.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer0A.c</FilePath>
             </File>
           </Files>
         </Group>

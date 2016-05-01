@@ -40,6 +40,7 @@
 #include "SysTick.h"
 #include "Pause.h"
 #include "PLL.h"
+#include "Sound.h"
 #include "ADC.h"
 #include "tm4c123gh6pm.h"
 
@@ -197,7 +198,7 @@ int32_t Convert(uint32_t input){
   return result;
 }
 void SysTick_Handler(void){
-	if((GPIO_PORTB_DATA_R&0x02) == 0x02){
+	if((GPIO_PORTE_DATA_R&0x10) == 0x10){
 		NVIC_ST_CTRL_R -= 0x02; // Disable Systick
 		Pause(0, 0, 0xFFFF);
 	}
@@ -223,22 +224,25 @@ void SysTick_Handler(void){
 }
 int main(void){  
 //  uint8_t red, green, blue;
-  PLL_Init();                           // set system clock to 80 MHz
+  PLL_Init();  	// set system clock to 80 MHz
 	ADC_Init();
-  IO_Init();
 	volatile uint32_t delay;
-  SYSCTL_RCGCGPIO_R |= 0x00000002;  
+  SYSCTL_RCGCGPIO_R |= 0x00000030;  
   delay = SYSCTL_RCGCGPIO_R; 
-	GPIO_PORTB_DIR_R &= ~0x06;          // Output = 1 Input = 0
-  GPIO_PORTB_AFSEL_R &= 0x00;               
-  GPIO_PORTB_DEN_R |= 0x06;
+	GPIO_PORTE_DIR_R &= ~0x30;          // Output = 1 Input = 0
+  GPIO_PORTE_AFSEL_R &= 0x00;               
+  GPIO_PORTE_DEN_R |= 0x30;
+	GPIO_PORTF_DIR_R |= 0x0A;          // Output = 1 Input = 0
+  GPIO_PORTF_AFSEL_R &= 0x00;               
+  GPIO_PORTF_DEN_R |= 0x0A;
 	SysTick_Init();
+	Sound_Init();
   // test DrawChar() and DrawCharS()
   ST7735_InitR(INITR_REDTAB);
   
-  ST7735_OutString("Lab 7!\nWelcome to EE319K");
-	IO_Touch();
-	NVIC_ST_RELOAD_R = 1333333;
+  //ST7735_OutString("Lab 7!\nWelcome to EE319K");
+	//IO_Touch();
+	NVIC_ST_RELOAD_R = 2666666;
 	NVIC_ST_CTRL_R += 0x02;
 	EnableInterrupts();
 	while(1){

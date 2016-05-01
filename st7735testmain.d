@@ -7,5 +7,6 @@
 .\st7735testmain.o: SysTick.h
 .\st7735testmain.o: Pause.h
 .\st7735testmain.o: PLL.h
+.\st7735testmain.o: Sound.h
 .\st7735testmain.o: ADC.h
 .\st7735testmain.o: tm4c123gh6pm.h

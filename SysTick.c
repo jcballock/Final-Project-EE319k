@@ -48,6 +48,7 @@ void SysTick_Init(void){
   NVIC_ST_RELOAD_R = NVIC_ST_RELOAD_M;  // maximum reload value
   NVIC_ST_CURRENT_R = 0;                // any write to current clears it
                                         // enable SysTick with core clock
+	NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x00FFFFFF)|0x40000000; // priority 2  
   NVIC_ST_CTRL_R = NVIC_ST_CTRL_ENABLE+NVIC_ST_CTRL_CLK_SRC;
 }
 // Time delay using busy wait.

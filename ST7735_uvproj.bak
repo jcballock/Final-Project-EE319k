@@ -426,11 +426,6 @@
               <FilePath>.\ST7735TestMain.c</FilePath>
             </File>
             <File>
-              <FileName>IO.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\IO.s</FilePath>
-            </File>
-            <File>
               <FileName>LCD.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\LCD.s</FilePath>
@@ -454,6 +449,31 @@
               <FileName>ADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ADC.c</FilePath>
+            </File>
+            <File>
+              <FileName>Pause.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Pause.c</FilePath>
+            </File>
+            <File>
+              <FileName>SoundLibrary.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SoundLibrary.c</FilePath>
+            </File>
+            <File>
+              <FileName>dac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\dac.c</FilePath>
+            </File>
+            <File>
+              <FileName>Sound.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sound.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer0A.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Timer0A.c</FilePath>
             </File>
           </Files>
         </Group>

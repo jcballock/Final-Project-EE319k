@@ -15,8 +15,8 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		ST7735_DrawCharS2(96, 80, 'e', color, bgcolor, 2);
 		ST7735_DrawCharS2(108, 80, 'd', color, bgcolor, 2);
 		SysTick_Wait10ms(50);
-		while((GPIO_PORTB_DATA_R&0x02) == 0x00){};
-		while((GPIO_PORTB_DATA_R&0x02) == 0x02){};
+		while((GPIO_PORTE_DATA_R&0x10) == 0x00){};
+		while((GPIO_PORTE_DATA_R&0x10) == 0x10){};
 		ST7735_FillRect(48, 80, 120, 20, bgcolor);
 		NVIC_ST_CTRL_R += 0x02;
 	}
@@ -32,8 +32,8 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		ST7735_DrawCharS2(120, 80, 'r', color, bgcolor, 2);
 		ST7735_DrawCharS2(132, 80, '!', color, bgcolor, 2);
 		SysTick_Wait10ms(50);
-		while((GPIO_PORTB_DATA_R&0x02) == 0x00){};
-		while((GPIO_PORTB_DATA_R&0x02) == 0x02){};
+		while((GPIO_PORTE_DATA_R&0x10) == 0x00){};
+		while((GPIO_PORTE_DATA_R&0x10) == 0x10){};
 		ST7735_FillRect(24, 80, 160, 20, bgcolor);
 		for(int i = 0; i < 12; i++){
 			boxes[i] = mirror[i];
