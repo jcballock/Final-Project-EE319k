@@ -1041,7 +1041,7 @@ void ST7735_DrawCharS2(int16_t x, int16_t y, char c, int16_t textColor, int16_t 
       line = 0x0;
     else
       line = Font[(c*5)+i];
-    for (j = 7; j>0; j--) {
+    for (j = 7; j>=0; j--) {
       if (line & 0x1) {
         if (size == 1) // default size
           ST7735_DrawPixel(y+j, x+i, textColor);

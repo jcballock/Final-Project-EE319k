@@ -56,9 +56,10 @@ double zs[12] = {2,2,2,2,2,2,2,2,2,2,2,2};
 uint32_t ADCMail;
 uint32_t ADCStatus;
 int score = 0;
-uint16_t color;
-uint16_t bgColor;
+uint16_t color = 0;
+uint16_t bgColor = 0xFFFF;
 uint8_t reset = 0;
+double speed = .05;
 const uint16_t Test[] = {
   0x001F, 0xFFFF, 0xF800, 0x07E0
 };
@@ -71,35 +72,49 @@ void IO_HeartBeat(void);
 void IO_Touch(void);
 void LCD_OutDec(uint32_t num);
 void LCD_OutFix(uint32_t num); 	
-void line_bresenham(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2){
-	uint8_t quad2 = 0;
-	int eps = 0;
-	if((y2-y1) > (x2-x1)){ // Switch because of the equation
-		quad2 = 1;
-		uint16_t x = x1;
+int absolute(int i){
+	return (i>0) ? i : -i;
+}
+void line_bresenham(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color){
+	uint8_t swapped = 0;
+	if(absolute(x2-x1) < absolute(y2 - y1)){
+		swapped = 1;
+		int x = x1;
 		x1 = y1;
 		y1 = x;
 		x = x2;
 		x2 = y2;
 		y2 = x;
 	}
+	if(x2 - x1 < 0){
+		int x = x1;
+		x1 = x2;
+		x2 = x;
+		x = y1;
+		y1 = y2;
+		y2 = x;
+	}
+	int eps = 0;
 	int dx = x2 - x1;
 	int	dy = y2 - y1;
 	uint16_t	y = y1;
 	for(int x = x1; x <= x2; x++ ){
-		if(quad2)
-			ST7735_DrawPixel(y,x,0);
+		if(swapped)
+			ST7735_DrawPixel(y,x,color);
 		else
-			ST7735_DrawPixel(x,y,0);
+			ST7735_DrawPixel(x,y,color);
 		eps += dy;
-		if ((eps << 1) >= dx){
-			y++;  
-			eps -= dx;
+		if(dy > 0){
+			if (eps  > dx){
+				y++;  
+				eps -= dx;
+			}
+		}
+		else if(eps < -dx){
+			y--;  
+			eps += dx;
 		}
 	}
-}
-int absolute(int i){
-	return (i>0) ? i : -i;
 }
 void line_bresenham3d(double x1, double y1, double z1, double x2, double y2, double z2, uint16_t color){
 	int eps = 0;
@@ -173,6 +188,10 @@ void makeArrow(int color){
 	line_bresenham3d(-93, 10, 16, -88, 0, 16, color);
 	line_bresenham3d(-88, 0, 16, -78, 0, 16, color);
 }
+void makePointer(int color, uint8_t position){
+	line_bresenham(24 + position, 32, 21 + position, 28, color);
+	line_bresenham(24 + position, 32, 27 + position, 28, color);
+}
 //
 // Takes an x and y value as inputs and generates a square based on their positions
 //
@@ -212,7 +231,7 @@ void toString(int value){
 }
 void SysTick_Handler(void){
 	score += 10;
-	if(score < 1000){
+	if(score < 2500){
 		color = 0;
 		bgColor = 0xFFFF;
 	}
@@ -250,8 +269,8 @@ void SysTick_Handler(void){
   double shift_factor = ((double) Convert(ADCMail))/1000; 
 	shift_factor -= 1;
 	shift_factor *= .5;
-	ST7735_FillRect(0, 0, 82, 164, bgColor);	
 	toString(score);
+	ST7735_FillRect(0, 0, 82, 164, bgColor);	
 	for(index_val = 0; index_val < 12; index_val++){
 		if(boxes[index_val] == -99)
 			Random_Gen(NVIC_ST_CURRENT_R);
@@ -263,7 +282,7 @@ void SysTick_Handler(void){
 				Pause(1, color, bgColor);
 			}
 		}
-		zs[index_val] -= .05;
+		zs[index_val] -= speed;
 	}
 	makeArrow(color);
 }
@@ -282,21 +301,15 @@ int main(void){
   GPIO_PORTF_DEN_R |= 0x0A;
 	SysTick_Init();
 	Sound_Init();
-  // test DrawChar() and DrawCharS()
+	// Init's
   ST7735_InitR(INITR_REDTAB);
   ST7735_FillScreen(0xFFFF); 
-  //ST7735_OutString("Lab 7!\nWelcome to EE319K");
-	//IO_Touch();
+	//Clear screen
 	NVIC_ST_RELOAD_R = 2666666;
-	NVIC_ST_CTRL_R += 0x02;
+	//NVIC_ST_CTRL_R += 0x02;
+	Pause(2, color, bgColor);
 	EnableInterrupts();
 	while(1){
 	}
-	/*while(1){
-		IO_Touch();
-		ST7735_FillScreen(0xFFFF); 
-		z -= .125;
-		makeSquare(-2, -5);
-	}*/  
 }
 
