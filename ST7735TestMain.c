@@ -231,20 +231,16 @@ void toString(int value){
 }
 void SysTick_Handler(void){
 	score += 10;
-	if(score < 2500){
+	if(score == 10){
 		color = 0;
 		bgColor = 0xFFFF;
 	}
-	else if(score < 5000){
+	else if(score == 2500){
 		bgColor = 0;
-		color = 0xFFFF;
-		ST7735_FillRect(82, 0, 128, 164, bgColor);	
+		color = 0x07E0;	
+		ST7735_FillRect(82, 0, 128, 164, bgColor);
 	}
-	else if(score < 10000){
-		bgColor = 0;
-		color = 0x07E0;
-	}
-	else{
+	else if(score >= 7500){
 		if(reset == 0)
 			color = 0x6732;
 		bgColor = 0;
@@ -271,6 +267,7 @@ void SysTick_Handler(void){
 	shift_factor *= .5;
 	toString(score);
 	ST7735_FillRect(0, 0, 82, 164, bgColor);	
+	makeArrow(color);
 	for(index_val = 0; index_val < 12; index_val++){
 		if(boxes[index_val] == -99)
 			Random_Gen(NVIC_ST_CURRENT_R);
@@ -284,7 +281,6 @@ void SysTick_Handler(void){
 		}
 		zs[index_val] -= speed;
 	}
-	makeArrow(color);
 }
 int main(void){  
 //  uint8_t red, green, blue;
