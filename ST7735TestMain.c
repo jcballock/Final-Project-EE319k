@@ -275,13 +275,14 @@ void SysTick_Handler(void){
 	for(index_val = 0; index_val < 12; index_val++){
 		if(boxes[index_val] == -99)
 			Random_Gen(NVIC_ST_CURRENT_R);
+		
 		boxes[index_val] += shift_factor;
 		makeSquare(-2, boxes[index_val], zs[index_val], color);
 		if(zs[index_val] < .6){
 			if(boxes[index_val] > -.75 && boxes[index_val] < 2.75 && immuneframes == 0){
 				if(makeShieldCount > 0){
 					makeShieldCount = 0;
-					immuneframes = 5;
+					immuneframes = 10;
 				}
 				else{
 					NVIC_ST_CTRL_R -= 0x02; // Disable Systick
@@ -295,7 +296,6 @@ void SysTick_Handler(void){
 	}
 }
 int main(void){  
-//  uint8_t red, green, blue;
   PLL_Init();  	// set system clock to 80 MHz
 	ADC_Init();
 	volatile uint32_t delay;
@@ -320,4 +320,3 @@ int main(void){
 	while(1){
 	}
 }
-

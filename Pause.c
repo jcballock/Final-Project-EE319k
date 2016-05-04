@@ -105,6 +105,7 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		score = 0;
 		if(position == 20){
 			color = 0;
+			shield = 2;
 			bgColor = 0xFFFF;
 			NVIC_ST_CTRL_R += 0x02;
 		}
@@ -170,6 +171,7 @@ void Pause(int menu, uint16_t color, uint16_t bgcolor){
 		color = 0;
 		bgColor = 0xFFFF;
 		score = 0;
+		shield = 2;
 		if(position == 40)
 			speed = 0.03;
 		else if (position == 20)
