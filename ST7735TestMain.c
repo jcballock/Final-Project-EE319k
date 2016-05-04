@@ -47,31 +47,29 @@
 void DelayWait10ms(uint32_t n);
 void EnableInterrupts(void);
 void DisableInterrupts(void);
-// test image
-// [blue] [green]
-// [red ] [white]
+
 double boxes[12] = {14,12,10,8,6,4,-2,-4,-6,-8,-10,-12};
 uint8_t index_val = 0;
 double zs[12] = {2,2,2,2,2,2,2,2,2,2,2,2};
+
 uint32_t ADCMail;
 uint32_t ADCStatus;
+
 int score = 0;
 uint16_t color = 0;
 uint16_t bgColor = 0xFFFF;
+
+uint8_t shield = 2;
+uint8_t makeShieldCount = 0;
+uint8_t immuneframes = 0;
+
 uint8_t reset = 0;
 double speed = .05;
-const uint16_t Test[] = {
-  0x001F, 0xFFFF, 0xF800, 0x07E0
-};
 
-uint32_t const TestData[16] ={
-  0,7,34,199,321,654,4789,9999,10000,21896,65535,
-  123456,1234567,12345678,123456789,0xFFFFFFFF};
 void IO_Init(void);
 void IO_HeartBeat(void);
 void IO_Touch(void);
-void LCD_OutDec(uint32_t num);
-void LCD_OutFix(uint32_t num); 	
+
 int absolute(int i){
 	return (i>0) ? i : -i;
 }
@@ -120,16 +118,6 @@ void line_bresenham3d(double x1, double y1, double z1, double x2, double y2, dou
 	int eps = 0;
 	int rx1, rx2, ry1, ry2;
 	if(z1 >= 0 && z2 >= 0){
-		//double distance1 = sqrt((x1 * x1) + (y1 * y1) + (z1 - 16) * (z1 - 16));
-		//double distance2 = sqrt((x2 * x2) + (y2 * y2) + (z2 - 16) * (z2 - 16));
-		//x1 = 64 + x1 + .5*z1*cos(angle*rad);
-		//y1 = 80 + y1 + .5*z1*sin(angle*rad);
-		//x2 = 64 + x2 + .5*z2*cos(angle*rad);
-		//y2 = 80 + y2 + .5* z2*sin(angle*rad); // Cavalier projections
-		//x1 = 32 + (x1 * cos(rad*angle)) - (y1 * cos(rad*angle));
-		//y1 = 40 + z1 + (x1 * sin(rad*angle)) + (y1* sin(rad*angle));
-		//x2 = 32 + (x2 * cos(rad*angle)) - (y2 * cos(rad*angle));
-		//y2 = 40 + z2 + (x2 * sin(rad*angle)) + (y2 * sin(rad*angle)); // Isometric view
 		rx1 = 96 + (x1*16/(z1));
 		ry1 = 80 + (y1*8/(z1));
 		rx2 = 96 + (x2*16/(z2));
@@ -191,6 +179,11 @@ void makeArrow(int color){
 void makePointer(int color, uint8_t position){
 	line_bresenham(24 + position, 32, 21 + position, 28, color);
 	line_bresenham(24 + position, 32, 27 + position, 28, color);
+}
+void makeShield(){
+	line_bresenham(20, 74, 20, 86,0xFE00);
+	line_bresenham(20, 86, 10, 92, 0xFE00);
+	line_bresenham(20, 74, 10, 68, 0xFE00);
 }
 //
 // Takes an x and y value as inputs and generates a square based on their positions
@@ -261,6 +254,17 @@ void SysTick_Handler(void){
 		NVIC_ST_CTRL_R -= 0x02; // Disable Systick
 		Pause(0, color, bgColor);
 	}
+	if((GPIO_PORTE_DATA_R&0x20) == 0x20){
+		// Trying to shield
+		if(shield > 0 && makeShieldCount == 0){
+			makeShieldCount = 30;
+			shield--;
+		}
+	}
+	if(makeShieldCount > 0){
+		makeShieldCount--;
+		makeShield();
+	}
 	ADCMail = ADC_In();  // sample 12-bit channel 1
   double shift_factor = ((double) Convert(ADCMail))/1000; 
 	shift_factor -= 1;
@@ -274,10 +278,18 @@ void SysTick_Handler(void){
 		boxes[index_val] += shift_factor;
 		makeSquare(-2, boxes[index_val], zs[index_val], color);
 		if(zs[index_val] < .6){
-			if(boxes[index_val] > -.75 && boxes[index_val] < 2.75){
-				NVIC_ST_CTRL_R -= 0x02; // Disable Systick
-				Pause(1, color, bgColor);
+			if(boxes[index_val] > -.75 && boxes[index_val] < 2.75 && immuneframes == 0){
+				if(makeShieldCount > 0){
+					makeShieldCount = 0;
+					immuneframes = 5;
+				}
+				else{
+					NVIC_ST_CTRL_R -= 0x02; // Disable Systick
+					Pause(1, color, bgColor);
+				}
 			}
+			if(immuneframes > 0)
+				immuneframes--;
 		}
 		zs[index_val] -= speed;
 	}
@@ -302,7 +314,7 @@ int main(void){
   ST7735_FillScreen(0xFFFF); 
 	//Clear screen
 	NVIC_ST_RELOAD_R = 2666666;
-	//NVIC_ST_CTRL_R += 0x02;
+	//Start with Main Menu
 	Pause(2, color, bgColor);
 	EnableInterrupts();
 	while(1){

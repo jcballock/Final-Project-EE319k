@@ -426,16 +426,6 @@
               <FilePath>.\ST7735TestMain.c</FilePath>
             </File>
             <File>
-              <FileName>LCD.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\LCD.s</FilePath>
-            </File>
-            <File>
-              <FileName>Print.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\Print.s</FilePath>
-            </File>
-            <File>
               <FileName>SysTick.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\SysTick.c</FilePath>
@@ -474,6 +464,11 @@
               <FileName>Timer0A.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Timer0A.c</FilePath>
+            </File>
+            <File>
+              <FileName>LCD.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\LCD.s</FilePath>
             </File>
           </Files>
         </Group>
